@@ -1,0 +1,4 @@
+*
+!.gitignore
+!jwt_key.sh
+!optimus_gen.go
