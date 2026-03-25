@@ -78,6 +78,7 @@ func startApiServer(router *gin.Engine) {
 		authorized.POST("/auth/logout", authCtr.Logout)
 		authorized.GET("/users/me", userCtr.Me)
 		authorized.GET("/users/:id", userCtr.Show)
+		authorized.PUT("/users/:id", userCtr.Update)
 	}
 }
 

@@ -13,7 +13,7 @@ type User struct {
 	Id        uint64    `json:"id" gorm:"primaryKey"`
 	Nickname  string    `json:"nickname"`
 	Username  string    `json:"username" gorm:"unique"`
-	Password  string    `json:"password" binding:"required"`
+	Password  string    `binding:"required"`
 	Avatar    string    `json:"avatar"`
 	Status    int       `json:"status"`
 	CreatedAt time.Time `json:"created_at"`

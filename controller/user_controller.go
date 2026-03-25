@@ -24,7 +24,7 @@ func (ctr *UserController) Me(c *gin.Context) {
 		controller.ResponseUnauthorized(c)
 		return
 	}
-	provider.GetOrm().Db.Where("user_id", userId).First(&user)
+	provider.GetOrm().Db.Where("id", userId).First(&user)
 	if user.Id == 0 {
 		controller.ResponseNotFound(c, "user not found")
 		return
@@ -40,7 +40,7 @@ func (ctr *UserController) Show(c *gin.Context) {
 	}
 	var user model.User
 	decodeId := provider.Hash().Decode(userId)
-	provider.GetOrm().Db.Where("user_id", decodeId).First(&user)
+	provider.GetOrm().Db.Where("id", decodeId).First(&user)
 	if user.Id == 0 {
 		controller.ResponseNotFound(c, "user not found")
 		return
@@ -68,9 +68,15 @@ func (ctr *UserController) Store(c *gin.Context) {
 }
 
 func (ctr *UserController) Update(c *gin.Context) {
-	userId, err := AppProvider.GetIdFromGin[uint64](c, AppProvider.ConvertToUInt64)
-	if err != nil {
-		controller.ResponseUnprocessable(c, 1, "invalid id", err)
+	var user model.User
+	userId, ok := c.Get("user_id")
+	if !ok {
+		controller.ResponseUnauthorized(c)
+		return
+	}
+	provider.GetOrm().Db.Where("id", userId).First(&user)
+	if user.Id == 0 {
+		controller.ResponseNotFound(c, "user not found")
 		return
 	}
 	var payload = &request.UserUpdateRequest{}
@@ -78,9 +84,8 @@ func (ctr *UserController) Update(c *gin.Context) {
 		controller.ResponseUnprocessable(c, 1, "params is invalid", err)
 		return
 	}
-	var user model.User
-	decodeId := provider.Hash().Decode(userId)
-	provider.GetOrm().Db.Where("user_id", decodeId).First(&user)
+
+	provider.GetOrm().Db.Where("id", userId).First(&user)
 	if user.Id == 0 {
 		controller.ResponseNotFound(c, "user not found")
 		return
@@ -98,5 +103,5 @@ func (ctr *UserController) Update(c *gin.Context) {
 		controller.ResponseInternalError(c, 1001, "update user failed", err)
 		return
 	}
-	controller.ResponseItem(c, &user)
+	controller.ResponseSuccess(c)
 }
